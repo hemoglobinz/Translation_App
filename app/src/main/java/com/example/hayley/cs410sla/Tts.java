@@ -30,7 +30,7 @@ public class Tts extends Activity implements TextToSpeech.OnInitListener {
         tts = new TextToSpeech(this, this);
 
         //Using button 5 "transcribe button"
-        tButton = (Button)findViewById(R.id.button5);
+        tButton = (Button)findViewById(R.id.button7);
 
         //Saving the text from the text view to variable of EditText
         txt = (TextView) findViewById(R.id.speech_to_text_result);
