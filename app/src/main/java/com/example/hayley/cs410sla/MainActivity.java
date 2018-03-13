@@ -55,6 +55,8 @@ public class MainActivity extends AppCompatActivity {
         buttonPlay = (Button) findViewById(R.id.button3);
         buttonStopPlay = (Button) findViewById(R.id.button4);
 
+        Tts tts = new Tts(); 
+
         buttonStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
