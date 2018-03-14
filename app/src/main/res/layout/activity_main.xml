@@ -45,9 +45,9 @@
         android:id="@+id/button5"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
         android:layout_below="@+id/button4"
-        android:layout_marginTop="13dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
         android:onClick="transcribeFile"
         android:text="Transcribe audio file" />
 
