@@ -8,7 +8,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.google.api.client.extensions.android.http.AndroidHttp;
@@ -38,33 +41,67 @@ public class TranscribeFileActivity extends AppCompatActivity {
     private Translate translate = new Translate();
     final private String ENGLISH = "en";
     final private String SPANISH = "es";
+    final private String FRENCH = "fr";
     String text = null;
     private TextToSpeech tts;
     private final String UTTERANCEID = "SPEECHSYNTH";
+    String language = null;
+    String country = null;
+    String toLang = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_transcribe_file);
 
-        Button browseButton = (Button) findViewById(R.id.browse_button);
-        Button readTranslation = (Button) findViewById(R.id.translate);
+        final Button browseButton = (Button) findViewById(R.id.browse_button);
+        final Button translateButton = (Button) findViewById(R.id.translate_button);
+        browseButton.setEnabled(false);
+        translateButton.setEnabled(false);
+        Spinner spinner = (Spinner) findViewById(R.id.pick_language_spinner);
+        //Create ArrayAdapter using string array of options and a default spinner layout
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.languages_array, android.R.layout.simple_spinner_dropdown_item);
+        //Specify layout to use when list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        //Apply adapter to spinner
+        spinner.setAdapter(adapter);
         browseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                translateButton.setEnabled(true);
                 Intent filePicker = new Intent(Intent.ACTION_GET_CONTENT);
                 filePicker.setType("storage/Android/data/com.example.hayley.cs410sli/files/*");
                 startActivityForResult(filePicker, 1);
             }
         });
-        readTranslation.setOnClickListener(new View.OnClickListener() {
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                browseButton.setEnabled(true);
+                String value = parent.getItemAtPosition(position).toString();
+                if(value.equals("Spanish")) {
+                    language = "spa";
+                    country = "US";
+                    toLang = SPANISH;
+                } else if(value.equals("French")) {
+                    language = "fr";
+                    country = "FR";
+                    toLang = FRENCH;
+                }
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+        translateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 tts = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
                     @Override
                     public void onInit(int status) {
                         if(status == TextToSpeech.SUCCESS) {
-                            Locale locSpanish = new Locale("spa", "US");
+                            Locale locSpanish = new Locale(language, country);
                             int result = tts.setLanguage(locSpanish);
 
                             if(result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
@@ -172,7 +209,8 @@ public class TranscribeFileActivity extends AppCompatActivity {
         SpeechRecognitionResult result = response.getResults().get(0);
         final String transcript = result.getAlternatives().get(0).getTranscript();
         //Take the text and convert it
-        text = translate.translate(transcript,ENGLISH, SPANISH);
+        Log.d("To language", toLang);
+        text = translate.translate(transcript,ENGLISH,toLang);
         Log.d("Text", text);
 
         runOnUiThread(new Runnable() {

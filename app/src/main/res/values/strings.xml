@@ -1,5 +1,10 @@
 <resources>
-    <string name="app_name">CS410SLA</string>
+    <string name="app_name">Story Time In Languages</string>
     <string name="edit_message">Enter a message</string>
     <string name="button_record">Record</string>
+    <string name="enter_dirname">Book Title</string>
+    <string-array name="languages_array">
+        <item>Spanish</item>
+        <item>French</item>
+    </string-array>
 </resources>

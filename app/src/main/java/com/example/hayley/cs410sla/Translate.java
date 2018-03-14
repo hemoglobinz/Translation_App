@@ -3,6 +3,8 @@ package com.example.hayley.cs410sla;
 /**
  * Created by niruiz3964 on 3/13/18.
  */
+import android.util.Log;
+
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -26,6 +28,7 @@ public class Translate {
         try {
             String encodedText = URLEncoder.encode(text, "UTF-8");
             String urlStr = "https://www.googleapis.com/language/translate/v2?key=" + GOOGLE_API_KEY + "&q=" + encodedText + "&target=" + to + "&source=" + from;
+            Log.d("URL string", urlStr);
 
             URL url = new URL(urlStr);
             HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
@@ -42,7 +45,7 @@ public class Translate {
                 System.err.println(conn.getResponseCode());
             }
 
-            BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(stream, "UTF-8"));
             String line;
 
             //Get the data from the Buffer
@@ -51,7 +54,7 @@ public class Translate {
             }
 
             JsonParser parser = new JsonParser();
-            JsonElement element = parser.parse(result.toString());
+            JsonElement element = parser.parse(result.toString().replace("&#39;", "'"));
 
             //Make sure that the Json object is valid
             if (element.isJsonObject()) {
