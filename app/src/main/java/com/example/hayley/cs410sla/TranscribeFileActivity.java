@@ -27,6 +27,9 @@ import org.apache.commons.io.IOUtils;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Locale;
+
+import android.speech.tts.TextToSpeech;
 
 public class TranscribeFileActivity extends AppCompatActivity {
 
@@ -36,6 +39,9 @@ public class TranscribeFileActivity extends AppCompatActivity {
     private Translate translate = new Translate();
     final private String ENGLISH = "en";
     final private String SPANISH = "es";
+    String text = null;
+    private TextToSpeech tts;
+    private final String UTTERANCEID = "SPEECHSYNTH";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +49,7 @@ public class TranscribeFileActivity extends AppCompatActivity {
         setContentView(R.layout.activity_transcribe_file);
 
         Button browseButton = (Button) findViewById(R.id.browse_button);
+        Button readTranslation = (Button) findViewById(R.id.translate);
         browseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -51,6 +58,40 @@ public class TranscribeFileActivity extends AppCompatActivity {
                 startActivityForResult(filePicker, 1);
             }
         });
+        readTranslation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                tts = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
+                    @Override
+                    public void onInit(int status) {
+                        if(status == TextToSpeech.SUCCESS) {
+                            Locale locSpanish = new Locale("spa", "US");
+                            int result = tts.setLanguage(locSpanish);
+
+                            if(result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                                Log.e("TTS", "Lang not supported!");
+                            } else {
+                                speakOut();
+                            }
+                        } else {
+                            Log.e("TTS", "INIT FAILED");
+                        }
+                    }
+                    private void speakOut() {
+                        CharSequence translation = text;
+                        tts.speak(translation, TextToSpeech.QUEUE_FLUSH, null, UTTERANCEID);
+                    }
+                });
+            }
+        });
+    }
+
+    public void onPause() {
+        if(tts != null) {
+            tts.stop();
+            tts.shutdown();
+        }
+        super.onPause();
     }
 
     @Override
@@ -93,24 +134,14 @@ public class TranscribeFileActivity extends AppCompatActivity {
                         );
                         processSpeech(base64EncodedData, "LINEAR16", 44100);
                     } catch(FileNotFoundException e) {
-                        messageBox("FileNotFound Exception", e.getMessage());
+                        e.printStackTrace();
                     } catch(IOException e) {
-                        messageBox("IO Exception", e.getMessage());
+                        e.printStackTrace();
                     }
 
                 }
             });
         }
-    }
-
-    private void messageBox(String method, String message) {
-        Log.d("EXCEPTION: " + method, message);
-        AlertDialog.Builder messageBox = new AlertDialog.Builder(this);
-        messageBox.setTitle(method);
-        messageBox.setMessage(message);
-        messageBox.setCancelable(false);
-        messageBox.setNeutralButton("OK", null);
-        messageBox.show();
     }
 
     private void processSpeech(String data, String encoding, int sampleRate) throws IOException {
@@ -142,7 +173,8 @@ public class TranscribeFileActivity extends AppCompatActivity {
         SpeechRecognitionResult result = response.getResults().get(0);
         final String transcript = result.getAlternatives().get(0).getTranscript();
         //Take the text and convert it
-        final String text = translate.translate(transcript,ENGLISH, SPANISH);
+        text = translate.translate(transcript,ENGLISH, SPANISH);
+        Log.d("Text", text);
 
         runOnUiThread(new Runnable() {
             @Override

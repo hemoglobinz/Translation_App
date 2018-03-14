@@ -8,7 +8,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Button;
 import android.media.MediaRecorder;
 import android.media.MediaPlayer;
@@ -54,8 +53,6 @@ public class MainActivity extends AppCompatActivity {
         buttonStop = (Button) findViewById(R.id.button2);
         buttonPlay = (Button) findViewById(R.id.button3);
         buttonStopPlay = (Button) findViewById(R.id.button4);
-
-        Tts tts = new Tts(); 
 
         buttonStart.setOnClickListener(new View.OnClickListener() {
             @Override

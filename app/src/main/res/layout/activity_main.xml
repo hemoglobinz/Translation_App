@@ -51,12 +51,4 @@
         android:onClick="transcribeFile"
         android:text="Transcribe audio file" />
 
-    <Button
-        android:id="@+id/button7"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/button5"
-        android:layout_toStartOf="@+id/button3"
-        android:contentDescription="synth_text"
-        android:text="Speak text" />
 </RelativeLayout>
