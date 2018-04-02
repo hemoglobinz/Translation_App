@@ -1,4 +1,6 @@
-# CS410_FinalProject# SL_with_trans
+# Story Time in Languages Application
+
+This application allows users to read books to their children and translate the pages into a language of their choice (currently, we support French and Spanish)/
 
 In order to use this repository, you will need to add your Google Speech API key.  Create a Java file in app/java/com/example/hayley/cs410sla called "APIKey" and put the following code inside that file:
 
